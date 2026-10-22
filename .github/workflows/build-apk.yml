@@ -24,8 +24,8 @@ jobs:
 
       - name: Generate keystore
         run: |
-          mkdir -p android/keystore
-          keytool -genkeypair -v -keystore android/keystore/release.jks \
+          mkdir -p android/app/keystore
+          keytool -genkeypair -v -keystore android/app/keystore/release.jks \
             -alias tapboss -keyalg RSA -keysize 2048 -validity 10000 \
             -storepass tapboss123 -keypass tapboss123 \
             -dname "CN=TapBoss, OU=Game, O=TapBoss, L=Moscow, ST=Moscow, C=RU"
