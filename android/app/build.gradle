@@ -1,0 +1,32 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'com.tapboss.app'
+    compileSdk 34
+    defaultConfig {
+        applicationId "com.tapboss.app"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+    signingConfigs {
+        release {
+            storeFile file(project.findProperty("KS_FILE") ?: "keystore/release.jks")
+            storePassword project.findProperty("KS_PASS")
+            keyAlias project.findProperty("KS_ALIAS")
+            keyPassword project.findProperty("KS_PASS")
+        }
+    }
+    buildTypes {
+        release { minifyEnabled false; signingConfig signingConfigs.release }
+        debug { signingConfig signingConfigs.release }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+}
