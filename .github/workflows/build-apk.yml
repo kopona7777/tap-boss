@@ -17,8 +17,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle
+      - name: Set up Gradle 8.7
         uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.7'
 
       - name: Generate keystore
         run: |
@@ -26,12 +28,12 @@ jobs:
           keytool -genkeypair -v -keystore android/keystore/release.jks \
             -alias tapboss -keyalg RSA -keysize 2048 -validity 10000 \
             -storepass tapboss123 -keypass tapboss123 \
-            -dname "CN=TapBoss, OU=Game, O=TapBoss, L=Moscow, S=Moscow, C=RU"
+            -dname "CN=TapBoss, OU=Game, O=TapBoss, L=Moscow, ST=Moscow, C=RU"
 
       - name: Build release APK
         working-directory: android
         run: |
-          ./gradlew assembleRelease --no-daemon \
+          gradle assembleRelease --no-daemon --stacktrace \
             -Pandroid.injected.signing.store.file=keystore/release.jks \
             -Pandroid.injected.signing.store.password=tapboss123 \
             -Pandroid.injected.signing.key.alias=tapboss \

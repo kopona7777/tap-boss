@@ -7,7 +7,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,9 +16,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         web = new WebView(this);
         setContentView(web);
+
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
@@ -27,13 +26,20 @@ public class MainActivity extends AppCompatActivity {
         s.setAllowContentAccess(false);
         s.setSupportZoom(false);
         s.setBuiltInZoomControls(false);
+        s.setCacheMode(WebSettings.LOAD_DEFAULT);
+
         web.setWebViewClient(new WebViewClient());
         web.setWebChromeClient(new WebChromeClient());
         web.setBackgroundColor(0xFF120A1E);
         web.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        if (savedInstanceState == null) web.loadUrl("file:///android_asset/index.html");
-        else web.restoreState(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            web.loadUrl("file:///android_asset/index.html");
+        } else {
+            web.restoreState(savedInstanceState);
+        }
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
