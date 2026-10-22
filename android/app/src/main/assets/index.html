@@ -1,76 +1,102 @@
 <!DOCTYPE html>
-<html lang="ru"><head>
+<html lang="ru">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#120a1e">
-<title>Босс-тапалка</title>
+<meta name="theme-color" content="#150a26">
+<title>Boss Tapper</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#120a1e;color:#fff;
- font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
- user-select:none;-webkit-user-select:none}
-#app{display:flex;flex-direction:column;height:100%;padding:env(safe-area-inset-top) 0 0}
-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 4px;font-size:14px}
-.pill{background:rgba(255,255,255,.09);border-radius:999px;padding:6px 12px;font-weight:700;display:flex;align-items:center;gap:6px}
-#modes{display:flex;gap:8px;padding:8px 16px 0}
-.mode{flex:1;border:0;border-radius:14px;padding:11px;font-size:15px;font-weight:800;color:#fff;background:rgba(255,255,255,.08)}
-.mode.on{background:linear-gradient(90deg,#f43f5e,#a855f7)}
-.mode.night.on{background:linear-gradient(90deg,#4c1d95,#1e3a8a)}
-#stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:8px}
-#boss{width:min(78vw,320px);height:min(78vw,320px);border-radius:26px;position:relative;
- background:linear-gradient(160deg,#ff5f6d,#c31162);box-shadow:0 18px 40px rgba(0,0,0,.5);
- display:flex;align-items:center;justify-content:center;transition:transform .08s ease}
-body.night #boss{background:linear-gradient(160deg,#4c1d95,#0f172a)}
-#boss:active{transform:scale(.94)}
-#boss .face{font-size:60px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
-#boss .lv{position:absolute;top:10px;left:12px;font-size:12px;font-weight:800;opacity:.85}
-#boss .nm{position:absolute;bottom:10px;right:12px;font-size:12px;font-weight:700;opacity:.85}
-#hpwrap{position:absolute;left:6%;right:6%;bottom:-42px;height:16px;background:rgba(255,255,255,.14);border-radius:999px;overflow:hidden}
-#hp{height:100%;width:100%;background:linear-gradient(90deg,#4ade80,#a3e635);transition:width .18s ease}
-body.night #hp{background:linear-gradient(90deg,#818cf8,#c084fc)}
-#hptxt{position:absolute;left:0;right:0;bottom:-64px;text-align:center;font-size:13px;font-weight:700;opacity:.9}
-#mult{position:absolute;left:0;right:0;bottom:-86px;text-align:center;font-size:12px;font-weight:800;color:#c084fc}
-.dmg{position:absolute;font-weight:900;font-size:22px;pointer-events:none;animation:up .9s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,.5)}
-@keyframes up{0%{opacity:1;transform:translateY(0) scale(.8)}100%{opacity:0;transform:translateY(-90px) scale(1.3)}}
-#hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:12px;opacity:.5}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;color:#fff;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+body{background:radial-gradient(1000px 620px at 50% -10%,#3a1c6e 0%,#150a26 55%,#0b0614 100%);transition:background .6s}
+body.night{background:radial-gradient(1000px 640px at 50% -12%,#1b2a6b 0%,#0d1030 52%,#05060f 100%)}
+#bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:tw 3.2s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.12;transform:scale(.7)}50%{opacity:.85;transform:scale(1.25)}}
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;padding:env(safe-area-inset-top) 0 0}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px 2px}
+.pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 13px;font-weight:800;font-size:14px}
+.pill .ic{font-size:15px}
+#modes{display:flex;gap:8px;padding:10px 14px 0}
+.mode{flex:1;border:1px solid rgba(255,255,255,.1);border-radius:15px;padding:12px;font-size:15px;font-weight:800;color:#fff;background:rgba(255,255,255,.06)}
+.mode.on{background:linear-gradient(90deg,#f43f5e,#a855f7);border-color:transparent;box-shadow:0 8px 22px rgba(168,85,247,.35)}
+.mode.night.on{background:linear-gradient(90deg,#4f46e5,#1e1b4b);box-shadow:0 8px 22px rgba(79,70,229,.4)}
+#stage{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:8px}
+.aura{position:absolute;top:50%;left:50%;width:min(86vw,370px);height:min(86vw,370px);margin:-min(43vw,185px) 0 0 -min(43vw,185px);border-radius:50%;background:radial-gradient(circle,rgba(244,63,94,.3),transparent 66%);animation:pulse 2.6s ease-in-out infinite;pointer-events:none}
+body.night .aura{background:radial-gradient(circle,rgba(99,102,241,.34),transparent 66%)}
+@keyframes pulse{0%,100%{transform:scale(.93);opacity:.6}50%{transform:scale(1.07);opacity:1}}
+#boss{width:min(72vw,300px);height:min(72vw,300px);border-radius:32px;position:relative;display:flex;align-items:center;justify-content:center;
+background:linear-gradient(160deg,#ff6b81,#c31162);box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.28);
+overflow:hidden;transition:transform .09s ease}
+#boss::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.3),transparent 62%)}
+body.night #boss{background:linear-gradient(160deg,#4c1d95,#0f172a);box-shadow:0 24px 60px rgba(0,0,0,.7),inset 0 2px 0 rgba(255,255,255,.12)}
+#boss.hit{animation:hit .2s ease-out}
+@keyframes hit{0%{transform:scale(.88)}40%{transform:scale(1.07) rotate(-2.5deg)}100%{transform:scale(1) rotate(0)}}
+#boss .face{font-size:86px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));animation:idle 2.8s ease-in-out infinite}
+@keyframes idle{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.05)}}
+.badge{position:absolute;font-size:11px;font-weight:800;opacity:.92;background:rgba(0,0,0,.3);padding:4px 10px;border-radius:999px}
+#blv{top:12px;left:12px}
+#bnm{bottom:12px;right:12px}
+.hpwrap{width:min(86vw,380px);height:20px;border-radius:999px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.12);position:relative;overflow:hidden}
+.hpfill{height:100%;width:100%;background:linear-gradient(90deg,#34d399,#a3e635);box-shadow:0 0 14px rgba(163,230,53,.45);transition:width .2s ease,background .35s ease}
+.hpwrap.low .hpfill{background:linear-gradient(90deg,#ef4444,#f97316);box-shadow:0 0 14px rgba(239,68,68,.55)}
+.hpwrap::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 2px,transparent 2px 26px);pointer-events:none}
+.hprow{display:flex;justify-content:space-between;align-items:center;width:min(86vw,380px);font-size:12px;font-weight:700;opacity:.88}
+#mult{font-size:12px;font-weight:800;color:#c084fc}
+#combo{position:absolute;top:4px;right:16px;font-size:22px;font-weight:900;color:#fde047;text-shadow:0 2px 12px rgba(0,0,0,.7);opacity:0;transition:opacity .2s;pointer-events:none}
+#combo.on{opacity:1}
+.dmg{position:absolute;font-weight:900;font-size:24px;pointer-events:none;animation:up .95s cubic-bezier(.2,.8,.3,1) forwards;text-shadow:0 3px 10px rgba(0,0,0,.6);white-space:nowrap}
+.dmg.crit{font-size:34px;color:#fde047;text-shadow:0 0 18px rgba(253,224,71,.75)}
+@keyframes up{0%{opacity:0;transform:translate(-50%,0) scale(.6)}18%{opacity:1;transform:translate(-50%,-18px) scale(1.15)}100%{opacity:0;transform:translate(-50%,-104px) scale(1)}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:8}
+#hint{font-size:12px;opacity:.45;text-align:center}
 .panel{background:rgba(255,255,255,.06);border-top:1px solid rgba(255,255,255,.1);padding:10px 14px calc(12px + env(safe-area-inset-bottom))}
-.row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
-.up{flex:0 0 auto;min-width:145px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:9px 11px;text-align:left;color:#fff}
-.up b{display:block;font-size:13px}
-.up span{font-size:11px;opacity:.72}
-.up .c{color:#fbbf24;font-weight:800}
-.up:disabled{opacity:.4}
-#tabs{display:flex;gap:6px;margin-bottom:9px;overflow-x:auto}
-.tab{flex:0 0 auto;background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700}
+#tabs{display:flex;gap:6px;margin-bottom:9px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.tab{flex:0 0 auto;white-space:nowrap;background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700}
 .tab.on{background:linear-gradient(90deg,#f43f5e,#a855f7)}
-body.night .tab.on{background:linear-gradient(90deg,#7c3aed,#1d4ed8)}
-#win{position:absolute;inset:0;background:rgba(10,5,20,.93);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:30px;text-align:center;z-index:5}
-#win h2{margin:0;font-size:26px}
-#win p{margin:0;opacity:.85;font-size:15px;white-space:pre-line}
-.big{background:linear-gradient(90deg,#f43f5e,#a855f7);border:0;color:#fff;border-radius:14px;padding:14px 26px;font-size:16px;font-weight:800}
-#toast{position:fixed;left:50%;transform:translateX(-50%);top:14px;background:rgba(0,0,0,.75);padding:9px 16px;border-radius:999px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s;z-index:9}
-#pop{position:fixed;inset:0;pointer-events:none;z-index:8}
-</style></head><body>
+body.night .tab.on{background:linear-gradient(90deg,#6366f1,#312e81)}
+.row{display:flex;gap:8px;overflow-x:auto;align-items:stretch;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.up{flex:0 0 auto;width:176px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px 12px;text-align:left;color:#fff;overflow:hidden}
+.up b{display:block;font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+.up .c{display:block;color:#fbbf24;font-weight:800;font-size:12px;margin-top:3px}
+.up span{display:block;font-size:11px;line-height:1.35;opacity:.72;margin-top:3px;overflow-wrap:anywhere}
+.up:disabled{opacity:.38}
+#win{position:absolute;inset:0;background:rgba(8,4,16,.94);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:30px;text-align:center;z-index:6}
+#win.show{display:flex;animation:fade .3s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+#win .medal{font-size:64px;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{0%{transform:scale(0) rotate(-25deg)}100%{transform:scale(1) rotate(0)}}
+#win h2{margin:0;font-size:27px}
+#win p{margin:0;opacity:.85;font-size:15px;white-space:pre-line;line-height:1.5}
+.big{background:linear-gradient(90deg,#f43f5e,#a855f7);border:0;color:#fff;border-radius:15px;padding:15px 30px;font-size:16px;font-weight:800;box-shadow:0 10px 26px rgba(168,85,247,.35)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);top:16px;background:rgba(0,0,0,.8);padding:10px 18px;border-radius:999px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s;z-index:9}
+</style>
+</head>
+<body>
+<div id="bg"></div>
 <div id="app">
   <header>
-    <div class="pill">🪙 <span id="coins">0</span></div>
-    <div class="pill">⚔ <span id="dmg">1</span> урон</div>
-    <div class="pill">💀 <span id="kills">0</span></div>
+    <div class="pill"><span class="ic" id="icCoin"></span><span id="coins">0</span></div>
+    <div class="pill"><span class="ic" id="icSword"></span><span id="dmg">1</span></div>
+    <div class="pill"><span class="ic" id="icSkull"></span><span id="kills">0</span></div>
   </header>
   <div id="modes">
-    <button class="mode on" id="mDay">☀️ День</button>
-    <button class="mode night" id="mNight">🌙 Ночь</button>
+    <button class="mode on" id="mDay"></button>
+    <button class="mode night" id="mNight"></button>
   </div>
   <div id="stage">
+    <div class="aura"></div>
+    <div id="combo"></div>
     <div id="boss">
-      <div class="lv" id="blv">Ур. 1</div>
-      <div class="face" id="face">👹</div>
-      <div class="nm" id="bnm">Слизень</div>
-      <div id="hpwrap"><div id="hp"></div></div>
-      <div id="hptxt">100 / 100</div>
-      <div id="mult" style="display:none"></div>
+      <div class="face" id="face"></div>
+      <div class="badge" id="blv"></div>
+      <div class="badge" id="bnm"></div>
     </div>
-    <div id="hint">тапай по боссу</div>
+    <div class="hpwrap" id="hpwrap"><div class="hpfill" id="hp"></div></div>
+    <div class="hprow"><span id="hptxt"></span><span id="mult"></span></div>
+    <div id="hint"></div>
   </div>
   <div class="panel">
     <div id="tabs"></div>
@@ -78,204 +104,13 @@ body.night .tab.on{background:linear-gradient(90deg,#7c3aed,#1d4ed8)}
   </div>
 </div>
 <div id="win">
-  <div style="font-size:56px">🏆</div>
-  <h2 id="wt">Босс побеждён!</h2>
+  <div class="medal" id="medal"></div>
+  <h2 id="wt"></h2>
   <p id="wp"></p>
-  <button class="big" onclick="nextBoss()">Дальше</button>
+  <button class="big" id="nextBtn"></button>
 </div>
-<div id="pop"></div>
+<canvas id="fx"></canvas>
 <div id="toast"></div>
-<script>
-const BOSSES=[
- {n:"Слизень",f:"👹",hp:100,coin:15},
- {n:"Гоблин",f:"🙂",hp:420,coin:60},
- {n:"Скелет",f:"💀",hp:1600,coin:220},
- {n:"Дракон",f:"🐉",hp:6500,coin:900},
- {n:"Титан",f:"👑",hp:26000,coin:3800}
-];
-const NIGHT=[
- {n:"Тень",f:"👤",hp:60},
- {n:"Крысолов",f:"🐀",hp:80},
- {n:"Пепельный Страж",f:"🗿",hp:110},
- {n:"Скорпион",f:"🦊",hp:150},
- {n:"Болотная Тварь",f:"🐚",hp:200},
- {n:"Виверна",f:"🐘",hp:260},
- {n:"Костяной Лорд",f:"🦴",hp:330},
- {n:"Пепельный Дракон",f:"🐉‍🔥",hp:410},
- {n:"Демон Пустоты",f:"🛏",hp:500},
- {n:"Лунный Скиллет",f:"💠",hp:600},
- {n:"Пожиратель",f:"🦀",hp:700},
- {n:"Кровавый Клинок",f:"⚔",hp:820},
- {n:"Феней Бездны",f:"🌊",hp:950},
- {n:"Пожиратель Миров",f:"🥳",hp:1100},
- {n:"Ночной Архонт",f:"🌑",hp:1300}
-];
-const UPG=[
- {k:"dmg",t:"Урон +1",c:20,g:1.5},
- {k:"dmg2",t:"Урон x2",c:900,g:2.2},
- {k:"crit",t:"баланс крита 10%",c:300,g:1.6},
- {k:"coin",t:"Монет +25%",c:150,g:1.5}
-];
-const NUPG={k:"nm",t:"Ночная мощность x3",c:300,g:3};
-const NMUL=3;
-let S={coins:0,dmg:1,crit:0,coinb:0,kills:0,boss:0,hp:0,maxhp:0,up:{},nm:1,nup:0,night:0};
-let mode="day";
-function $(s){return document.querySelector(s);}
-function load(){try{const r=localStorage.getItem("tapboss");if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}}
-function save(){try{localStorage.setItem("tapboss",JSON.stringify(S));}catch(e){}}
-function fmt(n){n=Math.floor(n);if(!isFinite(n))return "0";
- if(n<1e6)return n.toLocaleString("ru-RU");
- if(n<1e9)return (n/1e6).toFixed(1).replace(".",",")+"M";
- if(n<1e12)return (n/1e9).toFixed(1).replace(".",",")+"B";
- if(n<1e15)return (n/1e12).toFixed(1).replace(".",",")+"T";
- return n.toExponential(1).replace(".",",");}
-function dayBoss(){return BOSSES[Math.min(S.boss,BOSSES.length-1)];}
-function nightBoss(){return NIGHT[Math.min(S.night,NIGHT.length-1)];}
-function nightHP(i){return NIGHT[i].hp*Math.pow(NMUL,i);}
-function nightReward(i){return 800*Math.pow(NMUL,i);}
-function nightDmg(){return S.dmg*S.nm;}
-function startBoss(){
-  if(mode==="day"){
-    const b=dayBoss(); S.maxhp=b.hp; S.hp=b.hp;
-    $("#face").textContent=b.f; $("#bnm").textContent=b.n;
-    $("#blv").textContent="Ур. "+(S.boss+1);
-    $("#mult").style.display="none";
-  }else{
-    const i=Math.min(S.night,NIGHT.length-1); const b=NIGHT[i];
-    S.maxhp=nightHP(i); S.hp=S.maxhp;
-    $("#face").textContent=b.f; $("#bnm").textContent=b.n;
-    $("#blv").textContent="Ночь "+(i+1)+"/"+NIGHT.length;
-    const m=$("#mult"); m.style.display="block";
-    m.innerHTML="HP x"+Math.pow(NMUL,i)+" — x"+NMUL+" за каждого пройденного";
-  }
-  draw();
-}
-function draw(){
-  document.getElementById("hp").style.width=Math.max(0,100*S.hp/S.maxhp)+"%";
-  document.getElementById("hptxt").textContent=fmt(S.hp)+" / "+fmt(S.maxhp);
-  document.getElementById("coins").textContent=fmt(S.coins);
-  document.getElementById("dmg").textContent=fmt(mode==="day"?S.dmg:nightDmg());
-  document.getElementById("kills").textContent=S.kills;
-}
-let _tt=null;
-function toast(t){const e=$("#toast");e.textContent=t;e.style.opacity=1;
- clearTimeout(_tt);_tt=setTimeout(()=>e.style.opacity=0,1300);}
-let ac=null;
-function beep(f,du){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();
- const o=ac.createOscillator(),g=ac.createGain();o.type="square";o.frequency.value=f;g.gain.value=.05;
- o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+du);}catch(e){}}
-function tap(e){
-  if(S.hp<=0)return;
-  const crit=Math.random()<S.crit;
-  const base=mode==="day"?S.dmg:nightDmg();
-  const dd=Math.ceil(base*(crit?3:1));
-  S.hp=Math.max(0,S.hp-dd);
-  const b=$("#boss"), r=b.getBoundingClientRect();
-  const x=(e&&e.clientX)||(r.left+r.width/2), y=(e&&e.clientY)||(r.top+r.height/2);
-  const el=document.createElement("div");
-  el.className="dmg"; el.textContent=(crit?"✦":"")+fmt(dd);
-  el.style.left=(x-20)+"px"; el.style.top=(y-40)+"px";
-  el.style.color=crit?"#fde047":"#fff";
-  $("#pop").appendChild(el); setTimeout(()=>el.remove(),900);
-  beep(crit?880:520,0.06);
-  draw();
-  if(S.hp<=0)win();
-}
-function win(){
-  if(mode==="day"){
-    const b=dayBoss(); const reward=Math.ceil(b.coin*(1+S.coinb));
-    S.coins+=reward; S.kills++;
-    const wasLast=S.boss>=BOSSES.length-1;
-    S.boss=Math.min(S.boss+1,BOSSES.length-1);
-    save();
-    $("#wt").textContent=b.n+" побеждён!";
-    $("#wp").textContent="Награда: "+fmt(reward)+" 🪙"+(wasLast?"\n🌙 Открыта ночь!":"");
-  }else{
-    const i=Math.min(S.night,NIGHT.length-1); const b=NIGHT[i];
-    const reward=Math.ceil(nightReward(i)*(1+S.coinb));
-    S.coins+=reward; S.kills++;
-    const wasLast=i>=NIGHT.length-1;
-    S.night=Math.min(S.night+1,NIGHT.length-1);
-    save();
-    $("#wt").textContent=b.n+" побеждён!";
-    $("#wp").textContent="Награда: "+fmt(reward)+" 🪙"+
-      (wasLast?"\n🌑 Вся ночь пройдена!":"\Следующий босс: HP x"+Math.pow(NMUL,S.night));
-  }
-  $("#win").style.display="flex";
-}
-function nextBoss(){$("#win").style.display="none";startBoss();save();renderTabs();renderUps();}
-function buy(i){
-  const u=UPG[i], lv=S.up[i]||0;
-  const cost=Math.floor(u.c*Math.pow(u.g,lv));
-  if(S.coins<cost)return toast("Не хватает монет");
-  S.coins-=cost; S.up[i]=lv+1;
-  if(u.k==="dmg")S.dmg=S.dmg+1;
-  if(u.k==="dmg2")S.dmg=S.dmg*2;
-  if(u.k==="crit")S.crit=Math.min(.5,S.crit+.1);
-  if(u.k==="coin")S.coinb+=.25;
-  save(); renderUps(); draw(); toast("Куплено!");
-}
-function buyNight(){
-  const lv=S.nup||0;
-  const cost=Math.floor(NUPG.c*Math.pow(NUPG.g,lv));
-  if(S.coins<cost)return toast("Не хватает монет");
-  S.coins-=cost; S.nup=lv+1; S.nm=S.nm*3;
-  save(); renderUps(); draw(); toast("Ночная мощность x"+S.nm);
-}
-function renderUps(){
-  const box=$("#ups"); box.innerHTML="";
-  if(mode==="night"){
-    const lv=S.nup||0, cost=Math.floor(NUPG.c*Math.pow(NUPG.g,lv));
-    const b=document.createElement("button");
-    b.className="up"; b.disabled=S.coins<cost;
-    b.innerHTML="<b>"+NUPG.t+" <span class='c'>"+fmt(cost)+" 🪙</span></b><span>ур. "+lv+" · сила усиления x"+S.nm+"</span>";
-    b.onclick=buyNight; box.appendChild(b);
-    const back=document.createElement("button");
-    back.className="up"; back.innerHTML="<b>↩ Назад</b><span>к обучения</span>";
-    back.onclick=()=>{mode="day";setMode();startBoss();renderTabs();renderUps();save();};
-    box.appendChild(back);
-    return;
-  }
-  UPG.forEach((u,i)=>{
-    const lv=S.up[i]||0, cost=Math.floor(u.c*Math.pow(u.g,lv));
-    const b=document.createElement("button");
-    b.className="up"; b.disabled=S.coins<cost;
-    b.innerHTML="<b>"+u.t+" <span class='c'>"+fmt(cost)+" 🪙</span></b><span>ур. "+lv+"</span>";
-    b.onclick=()=>buy(i); box.appendChild(b);
-  });
-}
-function renderTabs(){
-  const t=$("#tabs"); t.innerHTML="";
-  if(mode==="night"){
-    NIGHT.forEach((b,i)=>{
-      if(i>S.night)return;
-      const el=document.createElement("button");
-      el.className="tab"+(i===S.night?" on":"");
-      el.textContent=(i+1)+". "+b.f+" "+b.n;
-      el.onclick=()=>{S.night=i;startBoss();save();renderTabs();};
-      t.appendChild(el);
-    });
-    return;
-  }
-  BOSSES.forEach((b,i)=>{
-    if(i>S.boss)return;
-    const el=document.createElement("button");
-    el.className="tab"+(i===S.boss?" on":"");
-    el.textContent=b.f+" "+b.n;
-    el.onclick=()=>{S.boss=i;startBoss();save();renderTabs();};
-    t.appendChild(el);
-  });
-}
-function setMode(){
-  document.body.classList.toggle("night",mode==="night");
-  $("#mDay").classList.toggle("on",mode==="day");
-  $("#mNight").classList.toggle("on",mode==="night");
-}
-$("#mDay").onclick=()=>{mode="day";setMode();startBoss();renderTabs();renderUps();save();};
-$("#mNight").onclick=()=>{mode="night";setMode();startBoss();renderTabs();renderUps();save();};
-document.getElementById("stage").addEventListener("pointerdown",e=>{e.preventDefault();tap(e);});
-document.addEventListener("contextmenu",e=>e.preventDefault());
-load(); setMode(); startBoss(); renderTabs(); renderUps();
-setInterval(()=>{renderUps();draw();},600);
-</script>
-</body></html>
+<script src="game.js"></script>
+</body>
+</html>
