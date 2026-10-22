@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +32,6 @@ jobs:
             -alias tapboss -keyalg RSA -keysize 2048 -validity 10000 \
             -storepass tapboss123 -keypass tapboss123 \
             -dname "CN=TapBoss, OU=Game, O=TapBoss, L=Moscow, ST=Moscow, C=RU"
-          ls -la app/keystore/
 
       - name: Build release APK
         working-directory: android
@@ -38,7 +39,18 @@ jobs:
           gradle assembleRelease --no-daemon --stacktrace
           ls -la app/build/outputs/apk/release/
 
-      - name: Upload APK
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: android/app/build/outputs/apk/release/app-release.apk
+          tag_name: v1.0
+          name: TapBoss v1.0
+          body: |
+            Босс-тапалка — оффлайн-игра для Android.
+            Тапай по боссу, отнимай HP, убивай — получай награду.
+          fail_on_unmatched_files: true
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: tap-boss-apk
