@@ -23,21 +23,19 @@ jobs:
           gradle-version: '8.7'
 
       - name: Generate keystore
+        working-directory: android
         run: |
-          mkdir -p android/app/keystore
-          keytool -genkeypair -v -keystore android/app/keystore/release.jks \
+          mkdir -p app/keystore
+          keytool -genkeypair -v -keystore app/keystore/release.jks \
             -alias tapboss -keyalg RSA -keysize 2048 -validity 10000 \
             -storepass tapboss123 -keypass tapboss123 \
             -dname "CN=TapBoss, OU=Game, O=TapBoss, L=Moscow, ST=Moscow, C=RU"
+          ls -la app/keystore/
 
       - name: Build release APK
         working-directory: android
         run: |
-          gradle assembleRelease --no-daemon --stacktrace \
-            -Pandroid.injected.signing.store.file=keystore/release.jks \
-            -Pandroid.injected.signing.store.password=tapboss123 \
-            -Pandroid.injected.signing.key.alias=tapboss \
-            -Pandroid.injected.signing.key.password=tapboss123
+          gradle assembleRelease --no-daemon --stacktrace
           ls -la app/build/outputs/apk/release/
 
       - name: Upload APK
