@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#120a1e">
+<title>Босс-тапалка</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#120a1e;color:#fff;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+ user-select:none;-webkit-user-select:none}
+#app{display:flex;flex-direction:column;height:100%;padding:env(safe-area-inset-top) 0 0}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 4px;font-size:14px}
+.pill{background:rgba(255,255,255,.09);border-radius:999px;padding:6px 12px;font-weight:700;
+ display:flex;align-items:center;gap:6px}
+#stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:8px}
+#boss{width:min(78vw,320px);height:min(78vw,320px);border-radius:26px;position:relative;
+ background:linear-gradient(160deg,#ff5f6d,#c31162);box-shadow:0 18px 40px rgba(0,0,0,.5);
+ display:flex;align-items:center;justify-content:center;transition:transform .08s ease}
+#boss:active{transform:scale(.94)}
+#boss .face{font-size:64px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
+#boss .lv{position:absolute;top:10px;left:12px;font-size:12px;font-weight:800;opacity:.85}
+#boss .nm{position:absolute;bottom:10px;right:12px;font-size:12px;font-weight:700;opacity:.85}
+#hpwrap{position:absolute;left:6%;right:6%;bottom:-42px;height:16px;background:rgba(255,255,255,.14);
+ border-radius:999px;overflow:hidden}
+#hp{height:100%;width:100%;background:linear-gradient(90deg,#4ade80,#a3e635);transition:width .18s ease}
+#hptxt{position:absolute;left:0;right:0;bottom:-64px;text-align:center;font-size:13px;font-weight:700;opacity:.9}
+.dmg{position:absolute;font-weight:900;font-size:22px;pointer-events:none;animation:up .9s ease-out forwards;
+ text-shadow:0 2px 8px rgba(0,0,0,.5)}
+@keyframes up{0%{opacity:1;transform:translateY(0) scale(.8)}100%{opacity:0;transform:translateY(-90px) scale(1.3)}}
+#hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:12px;opacity:.5}
+.panel{background:rgba(255,255,255,.06);border-top:1px solid rgba(255,255,255,.1);
+ padding:10px 14px calc(12px + env(safe-area-inset-bottom))}
+.row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.up{flex:0 0 auto;min-width:132px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);
+ border-radius:14px;padding:9px 11px;text-align:left;color:#fff}
+.up b{display:block;font-size:13px}
+.up span{font-size:11px;opacity:.72}
+.up .c{color:#fbbf24;font-weight:800}
+.up:disabled{opacity:.4}
+#tabs{display:flex;gap:6px;margin-bottom:9px;overflow-x:auto}
+.tab{flex:0 0 auto;background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:999px;
+ padding:7px 13px;font-size:12px;font-weight:700}
+.tab.on{background:linear-gradient(90deg,#f43f5e,#a855f7)}
+#win{position:absolute;inset:0;background:rgba(10,5,20,.93);display:none;flex-direction:column;
+ align-items:center;justify-content:center;gap:12px;padding:30px;text-align:center;z-index:5}
+#win h2{margin:0;font-size:26px}
+#win p{margin:0;opacity:.85;font-size:15px;white-space:pre-line}
+.big{background:linear-gradient(90deg,#f43f5e,#a855f7);border:0;color:#fff;border-radius:14px;
+ padding:14px 26px;font-size:16px;font-weight:800}
+#toast{position:fixed;left:50%;transform:translateX(-50%);top:14px;background:rgba(0,0,0,.75);
+ padding:9px 16px;border-radius:999px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s;z-index:9}
+#pop{position:fixed;inset:0;pointer-events:none;z-index:8}
+</style></head><body>
+<div id="app">
+  <header>
+    <div class="pill">🪙 <span id="coins">0</span></div>
+    <div class="pill">⚔️ <span id="dmg">1</span> урон</div>
+    <div class="pill">💀 <span id="kills">0</span></div>
+  </header>
+  <div id="stage">
+    <div id="boss">
+      <div class="lv" id="blv">Ур. 1</div>
+      <div class="face" id="face">👹</div>
+      <div class="nm" id="bnm">Слизень</div>
+      <div id="hpwrap"><div id="hp"></div></div>
+      <div id="hptxt">100 / 100</div>
+    </div>
+    <div id="hint">тапай по боссу</div>
+  </div>
+  <div class="panel">
+    <div id="tabs"></div>
+    <div class="row" id="ups"></div>
+  </div>
+</div>
+<div id="win">
+  <div style="font-size:56px">🏆</div>
+  <h2 id="wt">Босс побеждён!</h2>
+  <p id="wp"></p>
+  <button class="big" onclick="nextBoss()">Дальше</button>
+</div>
+<div id="pop"></div>
+<div id="toast"></div>
+<script>
+const BOSSES=[
+ {n:"Слизень",f:"👹",hp:100,dmg:10,coin:15},
+ {n:"Гоблин",f:"👺",hp:420,dmg:28,coin:60},
+ {n:"Скелет",f:"💀",hp:1600,dmg:80,coin:220},
+ {n:"Дракон",f:"🐉",hp:6500,dmg:240,coin:900},
+ {n:"Титан",f:"👑",hp:26000,dmg:700,coin:3800}
+];
+const UPG=[
+ {k:"dmg",t:"Урон +1",c:20,g:1.5},
+ {k:"dmg",t:"Урон x2",c:900,g:2.2},
+ {k:"crit",t:"Шанс крита 10%",c:300,g:1.6},
+ {k:"coin",t:"Монет +25%",c:150,g:1.5}
+];
+let S={coins:0,dmg:1,crit:0,coinb:0,kills:0,boss:0,hp:0,maxhp:0,up:{}};
+function load(){try{const r=localStorage.getItem("tapboss");if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}}
+function save(){try{localStorage.setItem("tapboss",JSON.stringify(S));}catch(e){}}
+function boss(){return BOSSES[Math.min(S.boss,BOSSES.length-1)];}
+function startBoss(){
+  const b=boss();
+  S.maxhp=b.hp; S.hp=b.hp;
+  document.getElementById("face").textContent=b.f;
+  document.getElementById("bnm").textContent=b.n;
+  document.getElementById("blv").textContent="Ур. "+(S.boss+1);
+  draw();
+}
+function draw(){
+  const b=boss();
+  document.getElementById("hp").style.width=Math.max(0,100*S.hp/S.maxhp)+"%";
+  document.getElementById("hptxt").textContent=Math.ceil(S.hp)+" / "+S.maxhp;
+  document.getElementById("coins").textContent=Math.floor(S.coins).toLocaleString("ru-RU");
+  document.getElementById("dmg").textContent=Math.floor(S.dmg);
+  document.getElementById("kills").textContent=S.kills;
+}
+let _tt=null;
+function toast(t){const e=document.getElementById("toast");e.textContent=t;e.style.opacity=1;
+ clearTimeout(_tt);_tt=setTimeout(()=>e.style.opacity=0,1300);}
+let ac=null;
+function beep(f,du){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();
+ const o=ac.createOscillator(),g=ac.createGain();o.type="square";o.frequency.value=f;g.gain.value=.05;
+ o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+du);}catch(e){}}
+function tap(e){
+  if(S.hp<=0)return;
+  const crit=Math.random()<S.crit;
+  const dd=Math.ceil(S.dmg*(crit?3:1));
+  S.hp=Math.max(0,S.hp-dd);
+  const b=document.getElementById("boss"), r=b.getBoundingClientRect();
+  const x=(e&&e.clientX)||(r.left+r.width/2), y=(e&&e.clientY)||(r.top+r.height/2);
+  const el=document.createElement("div");
+  el.className="dmg"; el.textContent=(crit?"✦":"")+dd;
+  el.style.left=(x-20)+"px"; el.style.top=(y-40)+"px";
+  el.style.color=crit?"#fde047":"#fff";
+  document.getElementById("pop").appendChild(el); setTimeout(()=>el.remove(),900);
+  beep(crit?880:520,0.06);
+  draw();
+  if(S.hp<=0)win();
+}
+function win(){
+  const b=boss();
+  const reward=Math.ceil(b.coin*(1+S.coinb));
+  S.coins+=reward; S.kills++;
+  S.boss=Math.min(S.boss+1,BOSSES.length-1);
+  save();
+  document.getElementById("wt").textContent=b.n+" побеждён!";
+  document.getElementById("wp").textContent="Награда: "+reward.toLocaleString("ru-RU")+" 🪙";
+  document.getElementById("win").style.display="flex";
+}
+function nextBoss(){document.getElementById("win").style.display="none";startBoss();save();}
+function buy(i){
+  const u=UPG[i], lv=S.up[i]||0;
+  const cost=Math.floor(u.c*Math.pow(u.g,lv));
+  if(S.coins<cost)return toast("Не хватает монет");
+  S.coins-=cost; S.up[i]=lv+1;
+  if(u.k==="dmg")S.dmg=(u.t==="Урон x2")?S.dmg*2:S.dmg+1;
+  if(u.k==="crit")S.crit=Math.min(.5,S.crit+.1);
+  if(u.k==="coin")S.coinb+=.25;
+  save(); renderUps(); draw(); toast("Куплено!");
+}
+function renderUps(){
+  const box=document.getElementById("ups"); box.innerHTML="";
+  UPG.forEach((u,i)=>{
+    const lv=S.up[i]||0, cost=Math.floor(u.c*Math.pow(u.g,lv));
+    const b=document.createElement("button");
+    b.className="up"; b.disabled=S.coins<cost;
+    b.innerHTML="<b>"+u.t+" <span class='c'>"+cost.toLocaleString("ru-RU")+" 🪙</span></b><span>ур. "+lv+"</span>";
+    b.onclick=()=>buy(i); box.appendChild(b);
+  });
+}
+function renderTabs(){
+  const t=document.getElementById("tabs"); t.innerHTML="";
+  BOSSES.forEach((b,i)=>{
+    if(i>S.boss)return;
+    const el=document.createElement("button");
+    el.className="tab"+(i===S.boss?" on":"");
+    el.textContent=b.f+" "+b.n;
+    el.onclick=()=>{S.boss=i;startBoss();save();renderTabs();};
+    t.appendChild(el);
+  });
+}
+document.getElementById("stage").addEventListener("pointerdown",e=>{e.preventDefault();tap(e);});
+document.addEventListener("contextmenu",e=>e.preventDefault());
+load(); startBoss(); renderTabs(); renderUps();
+setInterval(()=>{renderUps();draw();},600);
+</script>
+</body></html>
