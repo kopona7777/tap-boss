@@ -53,24 +53,24 @@ body.night .tab.on{background:linear-gradient(90deg,#7c3aed,#1d4ed8)}
 </style></head><body>
 <div id="app">
   <header>
-    <div class="pill">&#129689; <span id="coins">0</span></div>
-    <div class="pill">&#9876; <span id="dmg">1</span> &#10987;&#1086;&#1085;</div>
-    <div class="pill">&#128128; <span id="kills">0</span></div>
+    <div class="pill">🪙 <span id="coins">0</span></div>
+    <div class="pill">⚔ <span id="dmg">1</span> урон</div>
+    <div class="pill">💀 <span id="kills">0</span></div>
   </header>
   <div id="modes">
-    <button class="mode on" id="mDay">&#9728; &#1040;&#1077;&#1085;&#1100;</button>
-    <button class="mode night" id="mNight">&#127769; &#1053;&#1086;&#1095;&#1100;</button>
+    <button class="mode on" id="mDay">☀️ День</button>
+    <button class="mode night" id="mNight">🌙 Ночь</button>
   </div>
   <div id="stage">
     <div id="boss">
-      <div class="lv" id="blv">&#1059;&#1088;. 1</div>
-      <div class="face" id="face">&#128121;</div>
-      <div class="nm" id="bnm">&#1057;&#1083;&#1080;&#1079;&#1077;&#1085;&#1100;</div>
+      <div class="lv" id="blv">Ур. 1</div>
+      <div class="face" id="face">👹</div>
+      <div class="nm" id="bnm">Слизень</div>
       <div id="hpwrap"><div id="hp"></div></div>
       <div id="hptxt">100 / 100</div>
       <div id="mult" style="display:none"></div>
     </div>
-    <div id="hint">&#1090;&#1072;&#1087;&#1072;&#1081; &#1087;&#1086; &#1073;&#1086;&#1089;&#1089;&#1091;</div>
+    <div id="hint">тапай по боссу</div>
   </div>
   <div class="panel">
     <div id="tabs"></div>
@@ -78,45 +78,45 @@ body.night .tab.on{background:linear-gradient(90deg,#7c3aed,#1d4ed8)}
   </div>
 </div>
 <div id="win">
-  <div style="font-size:56px">&#127942;</div>
-  <h2 id="wt">&#1041;&#1086;&#1089;&#1089; &#1087;&#1086;&#1073;&#1077;&#1078;&#1076;&#1105;&#1085;!</h2>
+  <div style="font-size:56px">🏆</div>
+  <h2 id="wt">Босс побеждён!</h2>
   <p id="wp"></p>
-  <button class="big" onclick="nextBoss()">&#1044;&#1072;&#1083;&#1100;&#1096;&#1077;</button>
+  <button class="big" onclick="nextBoss()">Дальше</button>
 </div>
 <div id="pop"></div>
 <div id="toast"></div>
 <script>
 const BOSSES=[
- {n:"&#1057;&#1083;&#1080;&#1079;&#1077;&#1085;&#1100;",f:"&#128121;",hp:100,coin:15},
- {n:"&#1043;&#1086;&#1073;&#1083;&#1080;&#1085;",f:"&#128578;",hp:420,coin:60},
- {n:"&#1057;&#1082;&#1077;&#1083;&#1077;&#1090;",f:"&#128128;",hp:1600,coin:220},
- {n:"&#1044;&#1088;&#1072;&#1082;&#1086;&#1085;",f:"&#128009;",hp:6500,coin:900},
- {n:"&#1058;&#1080;&#1090;&#1072;&#1085;",f:"&#128081;",hp:26000,coin:3800}
+ {n:"Слизень",f:"👹",hp:100,coin:15},
+ {n:"Гоблин",f:"🙂",hp:420,coin:60},
+ {n:"Скелет",f:"💀",hp:1600,coin:220},
+ {n:"Дракон",f:"🐉",hp:6500,coin:900},
+ {n:"Титан",f:"👑",hp:26000,coin:3800}
 ];
 const NIGHT=[
- {n:"&#1058;&#1077;&#1085;&#1100;",f:"&#128100;",hp:60},
- {n:"&#1050;&#1088;&#1099;&#1089;&#1083;&#1086;&#1074;",f:"&#128000;",hp:80},
- {n:"&#1055;&#1077;&#1087;&#1077;&#1083;&#1100;&#1085;&#1099;&#1081; &#1057;&#1090;&#1088;&#1072;&#1078;",f:"&#128511;",hp:110},
- {n:"&#1057;&#1082;&#1086;&#1088;&#1087;&#1080;&#1086;&#1085;",f:"&#129418;",hp:150},
- {n:"&#1041;&#1086;&#1083;&#1086;&#1090;&#1085;&#1072;&#1103; &#1058;&#1074;&#1072;&#1088;&#1100;",f:"&#128026;",hp:200},
- {n:"&#1042;&#1080;&#1074;&#1077;&#1088;&#1085;&#1072;",f:"&#128024;",hp:260},
- {n:"&#1050;&#1086;&#1089;&#1090;&#1103;&#1085;&#1086;&#1081; &#1051;&#1086;&#1088;&#1076;",f:"&#129460;",hp:330},
- {n:"&#1055;&#1077;&#1087;&#1077;&#1083;&#1100;&#1085;&#1099;&#1081; &#1044;&#1088;&#1072;&#1082;&#1086;&#1085;",f:"&#128009;&#8205;&#128293;",hp:410},
- {n:"&#1044;&#1077;&#1084;&#1086;&#1085; &#1055;&#1091;&#1089;&#1090;&#1086;&#1090;&#1099;",f:"&#128719;",hp:500},
- {n:"&#1051;&#1091;&#1085;&#1085;&#1099;&#1081; &#1057;&#1082;&#1080;&#1083;&#1083;&#1077;&#1090;",f:"&#128160;",hp:600},
- {n:"&#1055;&#1086;&#1078;&#1080;&#1088;&#1072;&#1090;&#1077;&#1083;&#1100;",f:"&#129408;",hp:700},
- {n:"&#1050;&#1088;&#1086;&#1074;&#1072;&#1074;&#1099;&#1081; &#1050;&#1083;&#1080;&#1085;&#1086;&#1082;",f:"&#9876;",hp:820},
- {n:"&#1060;&#1086;&#1079;&#1103; &#1041;&#1079;&#1077;&#1076;&#1085;&#1099;",f:"&#127754;",hp:950},
- {n:"&#1055;&#1086;&#1078;&#1080;&#1088;&#1072;&#1090;&#1077;&#1083;&#1100; &#1052;&#1080;&#1088;&#1086;&#1074;",f:"&#129395;",hp:1100},
- {n:"&#1053;&#1086;&#1095;&#1085;&#1086;&#1081; &#1040;&#1088;&#1093;&#1086;&#1085;&#1090;",f:"&#127761;",hp:1300}
+ {n:"Тень",f:"👤",hp:60},
+ {n:"Крысолов",f:"🐀",hp:80},
+ {n:"Пепельный Страж",f:"🗿",hp:110},
+ {n:"Скорпион",f:"🦊",hp:150},
+ {n:"Болотная Тварь",f:"🐚",hp:200},
+ {n:"Виверна",f:"🐘",hp:260},
+ {n:"Костяной Лорд",f:"🦴",hp:330},
+ {n:"Пепельный Дракон",f:"🐉‍🔥",hp:410},
+ {n:"Демон Пустоты",f:"🛏",hp:500},
+ {n:"Лунный Скиллет",f:"💠",hp:600},
+ {n:"Пожиратель",f:"🦀",hp:700},
+ {n:"Кровавый Клинок",f:"⚔",hp:820},
+ {n:"Феней Бездны",f:"🌊",hp:950},
+ {n:"Пожиратель Миров",f:"🥳",hp:1100},
+ {n:"Ночной Архонт",f:"🌑",hp:1300}
 ];
 const UPG=[
- {k:"dmg",t:"&#1059;&#1088;&#1086;&#1085; +1",c:20,g:1.5},
- {k:"dmg2",t:"&#1059;&#1088;&#1086;&#1085; x2",c:900,g:2.2},
- {k:"crit",t:"&#1068;&#1072;&#1085;&#1089; &#1082;&#1088;&#1080;&#1090;&#1072; 10%",c:300,g:1.6},
- {k:"coin",t:"&#1052;&#1086;&#1085;&#1077;&#1090; +25%",c:150,g:1.5}
+ {k:"dmg",t:"Урон +1",c:20,g:1.5},
+ {k:"dmg2",t:"Урон x2",c:900,g:2.2},
+ {k:"crit",t:"баланс крита 10%",c:300,g:1.6},
+ {k:"coin",t:"Монет +25%",c:150,g:1.5}
 ];
-const NUPG={k:"nm",t:"&#1053;&#1086;&#1095;&#1085;&#1072;&#1103; &#1084;&#1086;&#1099;&#1085;&#1086;&#1089;&#1090;&#1100; x3",c:300,g:3};
+const NUPG={k:"nm",t:"Ночная мощность x3",c:300,g:3};
 const NMUL=3;
 let S={coins:0,dmg:1,crit:0,coinb:0,kills:0,boss:0,hp:0,maxhp:0,up:{},nm:1,nup:0,night:0};
 let mode="day";
@@ -138,15 +138,15 @@ function startBoss(){
   if(mode==="day"){
     const b=dayBoss(); S.maxhp=b.hp; S.hp=b.hp;
     $("#face").textContent=b.f; $("#bnm").textContent=b.n;
-    $("#blv").textContent="&#1059;&#1088;. "+(S.boss+1);
+    $("#blv").textContent="Ур. "+(S.boss+1);
     $("#mult").style.display="none";
   }else{
     const i=Math.min(S.night,NIGHT.length-1); const b=NIGHT[i];
     S.maxhp=nightHP(i); S.hp=S.maxhp;
     $("#face").textContent=b.f; $("#bnm").textContent=b.n;
-    $("#blv").textContent="&#1053;&#1086;&#1095;&#1100; "+(i+1)+"/"+NIGHT.length;
+    $("#blv").textContent="Ночь "+(i+1)+"/"+NIGHT.length;
     const m=$("#mult"); m.style.display="block";
-    m.innerHTML="HP x"+Math.pow(NMUL,i)+" &mdash; x"+NMUL+" &#1079;&#1072; &#1082;&#1072;&#1078;&#1076;&#1086;&#1075;&#1086; &#1087;&#1088;&#1086;&#1081;&#1076;&#1077;&#1085;&#1085;&#1086;&#1075;&#1086;";
+    m.innerHTML="HP x"+Math.pow(NMUL,i)+" — x"+NMUL+" за каждого пройденного";
   }
   draw();
 }
@@ -173,7 +173,7 @@ function tap(e){
   const b=$("#boss"), r=b.getBoundingClientRect();
   const x=(e&&e.clientX)||(r.left+r.width/2), y=(e&&e.clientY)||(r.top+r.height/2);
   const el=document.createElement("div");
-  el.className="dmg"; el.textContent=(crit?"&#10022;":"")+fmt(dd);
+  el.className="dmg"; el.textContent=(crit?"✦":"")+fmt(dd);
   el.style.left=(x-20)+"px"; el.style.top=(y-40)+"px";
   el.style.color=crit?"#fde047":"#fff";
   $("#pop").appendChild(el); setTimeout(()=>el.remove(),900);
@@ -188,8 +188,8 @@ function win(){
     const wasLast=S.boss>=BOSSES.length-1;
     S.boss=Math.min(S.boss+1,BOSSES.length-1);
     save();
-    $("#wt").textContent=b.n+" &#1087;&#1086;&#1073;&#1077;&#1078;&#1076;&#1105;&#1085;!";
-    $("#wp").textContent="&#1053;&#1072;&#1075;&#1088;&#1072;&#1076;&#1072;: "+fmt(reward)+" &#129689;"+(wasLast?"\n&#127769; &#1054;&#1090;&#1082;&#1088;&#1099;&#1090;&#1072; &#1085;&#1086;&#1095;&#1100;!":"");
+    $("#wt").textContent=b.n+" побеждён!";
+    $("#wp").textContent="Награда: "+fmt(reward)+" 🪙"+(wasLast?"\n🌙 Открыта ночь!":"");
   }else{
     const i=Math.min(S.night,NIGHT.length-1); const b=NIGHT[i];
     const reward=Math.ceil(nightReward(i)*(1+S.coinb));
@@ -197,9 +197,9 @@ function win(){
     const wasLast=i>=NIGHT.length-1;
     S.night=Math.min(S.night+1,NIGHT.length-1);
     save();
-    $("#wt").textContent=b.n+" &#1087;&#1086;&#1073;&#1077;&#1078;&#1076;&#1105;&#1085;!";
-    $("#wp").textContent="&#1053;&#1072;&#1075;&#1088;&#1072;&#1076;&#1072;: "+fmt(reward)+" &#129689;"+
-      (wasLast?"\n&#127761; &#1042;&#1089;&#1103; &#1085;&#1086;&#1095;&#1100; &#1087;&#1088;&#1086;&#1081;&#1076;&#1077;&#1085;&#1072!":"\n&#1057;&#1083;&#1077;&#1076;&#1091;&#1102;&#1096;&#1080;&#1081; &#1073;&#1086;&#1089;&#1089;: HP x"+Math.pow(NMUL,S.night));
+    $("#wt").textContent=b.n+" побеждён!";
+    $("#wp").textContent="Награда: "+fmt(reward)+" 🪙"+
+      (wasLast?"\n🌑 Вся ночь пройдена!":"\Следующий босс: HP x"+Math.pow(NMUL,S.night));
   }
   $("#win").style.display="flex";
 }
@@ -207,20 +207,20 @@ function nextBoss(){$("#win").style.display="none";startBoss();save();renderTabs
 function buy(i){
   const u=UPG[i], lv=S.up[i]||0;
   const cost=Math.floor(u.c*Math.pow(u.g,lv));
-  if(S.coins<cost)return toast("&#1053;&#1077; &#1093;&#1074;&#1072;&#1090;&#1072;&#1077;&#1090; &#1084;&#1086;&#1085;&#1077;&#1090");
+  if(S.coins<cost)return toast("Не хватает монет");
   S.coins-=cost; S.up[i]=lv+1;
   if(u.k==="dmg")S.dmg=S.dmg+1;
   if(u.k==="dmg2")S.dmg=S.dmg*2;
   if(u.k==="crit")S.crit=Math.min(.5,S.crit+.1);
   if(u.k==="coin")S.coinb+=.25;
-  save(); renderUps(); draw(); toast("&#1050;&#1091;&#1087;&#1083;&#1077;&#1085;&#1086!");
+  save(); renderUps(); draw(); toast("Куплено!");
 }
 function buyNight(){
   const lv=S.nup||0;
   const cost=Math.floor(NUPG.c*Math.pow(NUPG.g,lv));
-  if(S.coins<cost)return toast("&#1053;&#1077; &#1093;&#1074;&#1072;&#1090;&#1072;&#1077;&#1090; &#1084;&#1086;&#1085;&#1077;&#1090");
+  if(S.coins<cost)return toast("Не хватает монет");
   S.coins-=cost; S.nup=lv+1; S.nm=S.nm*3;
-  save(); renderUps(); draw(); toast("&#1053;&#1086;&#1095;&#1085;&#1072;&#1103; &#1084;&#1086;&#1097;&#1086;&#1089;&#1090;&#1100; x"+S.nm);
+  save(); renderUps(); draw(); toast("Ночная мощность x"+S.nm);
 }
 function renderUps(){
   const box=$("#ups"); box.innerHTML="";
@@ -228,10 +228,10 @@ function renderUps(){
     const lv=S.nup||0, cost=Math.floor(NUPG.c*Math.pow(NUPG.g,lv));
     const b=document.createElement("button");
     b.className="up"; b.disabled=S.coins<cost;
-    b.innerHTML="<b>"+NUPG.t+" <span class='c'>"+fmt(cost)+" &#129689;</span></b><span>&#1091;&#1088;. "+lv+" &middot; &#1089;&#1080;&#1083;&#1072; &#1091;&#1089;&#1080;&#1083;&#1077;&#1085;&#1080;&#1103; x"+S.nm+"</span>";
+    b.innerHTML="<b>"+NUPG.t+" <span class='c'>"+fmt(cost)+" 🪙</span></b><span>ур. "+lv+" · сила усиления x"+S.nm+"</span>";
     b.onclick=buyNight; box.appendChild(b);
     const back=document.createElement("button");
-    back.className="up"; back.innerHTML="<b>&#8617; &#1053;&#1072;&#1079;&#1072;&#1076;</b><span>&#1082; &#1086;&#1073;&#1091;&#1095;&#1077;&#1085;&#1080;&#1103;</span>";
+    back.className="up"; back.innerHTML="<b>↩ Назад</b><span>к обучения</span>";
     back.onclick=()=>{mode="day";setMode();startBoss();renderTabs();renderUps();save();};
     box.appendChild(back);
     return;
@@ -240,7 +240,7 @@ function renderUps(){
     const lv=S.up[i]||0, cost=Math.floor(u.c*Math.pow(u.g,lv));
     const b=document.createElement("button");
     b.className="up"; b.disabled=S.coins<cost;
-    b.innerHTML="<b>"+u.t+" <span class='c'>"+fmt(cost)+" &#129689;</span></b><span>&#1091;&#1088;. "+lv+"</span>";
+    b.innerHTML="<b>"+u.t+" <span class='c'>"+fmt(cost)+" 🪙</span></b><span>ур. "+lv+"</span>";
     b.onclick=()=>buy(i); box.appendChild(b);
   });
 }
